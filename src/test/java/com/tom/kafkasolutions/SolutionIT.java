@@ -58,7 +58,7 @@ public class SolutionIT {
     @SneakyThrows
     @Test
     @Order(1)
-    public void shouldSendMessages() {
+    public void whenMessagesSentToInputTopicThenResultShouldHaveMetadata() {
         kafkaTemplate = new KafkaProducer<>(producerProps());
 
         kafkaTemplate.initTransactions();
@@ -92,7 +92,7 @@ public class SolutionIT {
 
     @Test
     @Order(2)
-    public void shouldConsumeMessages() {
+    public void whenConsumingFromOutputThenCountShouldBeEqual() {
         KafkaConsumer<String, byte[]> outputConsumer = new KafkaConsumer<>(consumerProps(OUTPUT_GROUP_ID));
 
         outputConsumer.subscribe(Collections.singleton(OUTPUT_TOPIC));

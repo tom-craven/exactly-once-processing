@@ -1,0 +1,44 @@
+spring:
+  application:
+    name: kafka-solutions
+  kafka:
+    ssl:
+      trust-store-path: src\main\resources\kafka.truststore.jks
+      trust-store-location: file:${spring.kafka.ssl.trust-store-path}
+      trust-store-password: secret
+    jaas:
+      enabled: true
+      login-module: org.apache.kafka.common.security.plain.PlainLoginModule
+      control-flag: required
+      options:
+        username: admin
+        password: admin-secret
+      login-principle: User:${spring.kafka.jaas.options.username}
+      config-string: ${spring.kafka.jaas.login-module} ${spring.kafka.jaas.control-flag} username=${spring.kafka.jaas.options.username} password=${spring.kafka.jaas.options.password};
+    template:
+      default-topic: output-topic
+      consumer-topic: input-topic
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: ${spring.application.name}-group
+      auto-offset-reset: latest
+      value-deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      properties:
+        sasl.jaas.config: ${spring.kafka.jaas.config-string}
+    producer:
+      value-serializer: org.apache.kafka.common.serialization.ByteArraySerializer
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      transaction-id-prefix: transactional-test
+      properties:
+        enable.idempotence: true
+    properties:
+      security.protocol: SASL_SSL
+      sasl.mechanism: PLAIN
+      sasl.jaas.config: ${spring.kafka.jaas.config-string}
+    admin:
+      fail-fast: true
+
+logging:
+  level:
+    root: info
